@@ -182,6 +182,7 @@ func NewNode(datadir string, config *NodeConfig) (stack *Node, _ error) {
 				config.EthereumNetworkID = 4
 			}
 		}
+
 		// If we have the Berylbit network, hard code the chain configs too
 		if config.EthereumGenesis == BerylbitGenesis() {
 			genesis.Config = params.BerylbitChainConfig

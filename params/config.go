@@ -31,6 +31,7 @@ var (
 	RopstenGenesisHash = common.HexToHash("0x41941023680923e0fe4d74a34bdac8141f2540e3ae90623718e47d66d1ca4a2d")
 	SepoliaGenesisHash = common.HexToHash("0x25a5cc106eea7138acab33231d7160d69cb777ee0c2c553fcddf5138993e6dd9")
 	RinkebyGenesisHash = common.HexToHash("0x6341fd3daf94b748c72ced5a5b26028f2474f5f00d824504e4fa37a75767e177")
+	BerylbitGenesisHash = common.HexToHash("0x6e1333da32fd68f2aae12eb51255050fe2beda8d249c3b2c81082ec166fbd677")
 	GoerliGenesisHash  = common.HexToHash("0xbf7e331f7f7c1dd2e05159666b3bf8bc7a8a3a9eb1d518969eab529dd9b88c1a")
 	KilnGenesisHash    = common.HexToHash("0x51c7fe41be669f69c45c33a56982cbde405313342d9e2b00d7c91a7b284dd4f8")
 )
@@ -218,6 +219,24 @@ var (
 		Threshold: 2,
 	}
 
+	// BerylbitChainConfig contains the chain parameters to run a node on the BerylBit network.
+	BerylbitChainConfig = &ChainConfig{
+		ChainID:                       big.NewInt(9012),
+		HomesteadBlock:                big.NewInt(0),
+		DAOForkBlock:                  nil,
+		DAOForkSupport:                true,
+		EIP150Block:                   big.NewInt(0),
+		EIP155Block:                   big.NewInt(0),
+		EIP158Block:                   big.NewInt(0),
+		ByzantiumBlock:                big.NewInt(0),
+		ConstantinopleBlock:           big.NewInt(0),
+		PetersburgBlock:               big.NewInt(0),
+		IstanbulBlock:                 big.NewInt(0),
+		BerlinBlock:                   big.NewInt(0),
+		LondonBlock:                   big.NewInt(0),
+		TerminalTotalDifficultyPassed: true,
+	}
+
 	// GoerliChainConfig contains the chain parameters to run a node on the Görli test network.
 	GoerliChainConfig = &ChainConfig{
 		ChainID:                       big.NewInt(5),
@@ -288,6 +307,7 @@ var NetworkNames = map[string]string{
 	MainnetChainConfig.ChainID.String(): "mainnet",
 	RopstenChainConfig.ChainID.String(): "ropsten",
 	RinkebyChainConfig.ChainID.String(): "rinkeby",
+	BerylbitChainConfig.ChainID.String(): "berylbit",
 	GoerliChainConfig.ChainID.String():  "goerli",
 	SepoliaChainConfig.ChainID.String(): "sepolia",
 }

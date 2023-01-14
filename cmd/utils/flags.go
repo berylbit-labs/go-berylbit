@@ -118,7 +118,7 @@ var (
 	}
 	NetworkIdFlag = &cli.Uint64Flag{
 		Name:     "networkid",
-		Usage:    "Explicitly set network id (integer)(For testnets: use --ropsten, --rinkeby, --goerli instead)",
+		Usage:    "Explicitly set network id (integer)(For testnets: use --ropsten, --rinkeby, --goerli instead), ror Berylbit use --berylbit",
 		Value:    ethconfig.Defaults.NetworkId,
 		Category: flags.EthCategory,
 	}
@@ -135,6 +135,11 @@ var (
 	RinkebyFlag = &cli.BoolFlag{
 		Name:     "rinkeby",
 		Usage:    "Rinkeby network: pre-configured proof-of-authority test network",
+		Category: flags.EthCategory,
+	}
+	BerylbitFlag = &cli.BoolFlag{
+		Name:     "berylbit",
+		Usage:    "Berylbit Mainnet network: pre-configured proof-of-work main network",
 		Category: flags.EthCategory,
 	}
 	GoerliFlag = &cli.BoolFlag{
@@ -990,6 +995,7 @@ var (
 	// NetworkFlags is the flag group of all built-in supported networks.
 	NetworkFlags = append([]cli.Flag{
 		MainnetFlag,
+		BerylbitFlag,
 	}, TestnetFlags...)
 
 	// DatabasePathFlags is the flag group of all database path flags.
@@ -1012,6 +1018,9 @@ func MakeDataDir(ctx *cli.Context) string {
 		}
 		if ctx.Bool(RinkebyFlag.Name) {
 			return filepath.Join(path, "rinkeby")
+		}
+		if ctx.Bool(BerylbitFlag.Name) {
+			return filepath.Join(path, "berylbit")
 		}
 		if ctx.Bool(GoerliFlag.Name) {
 			return filepath.Join(path, "goerli")
@@ -1074,6 +1083,8 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.SepoliaBootnodes
 	case ctx.Bool(RinkebyFlag.Name):
 		urls = params.RinkebyBootnodes
+	case ctx.Bool(BerylbitFlag.Name):
+		urls = params.BerylbitBootnodes
 	case ctx.Bool(GoerliFlag.Name):
 		urls = params.GoerliBootnodes
 	case ctx.Bool(KilnFlag.Name):
@@ -1530,6 +1541,8 @@ func SetDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "ropsten")
 	case ctx.Bool(RinkebyFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "rinkeby")
+	case ctx.Bool(BerylbitFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "berylbit")
 	case ctx.Bool(GoerliFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "goerli")
 	case ctx.Bool(SepoliaFlag.Name) && cfg.DataDir == node.DefaultDataDir():
@@ -1726,7 +1739,7 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	// Avoid conflicting network flags
-	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag)
+	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, BerylbitFlag, GoerliFlag, SepoliaFlag, KilnFlag)
 	CheckExclusive(ctx, LightServeFlag, SyncModeFlag, "light")
 	CheckExclusive(ctx, DeveloperFlag, ExternalSignerFlag) // Can't use both ephemeral unlocked and external signer
 	if ctx.String(GCModeFlag.Name) == "archive" && ctx.Uint64(TxLookupLimitFlag.Name) != 0 {
@@ -1895,6 +1908,23 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		}
 		cfg.Genesis = core.DefaultRinkebyGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.RinkebyGenesisHash)
+	case ctx.Bool(BerylbitFlag.Name):
+		log.Warn("")
+		log.Warn("--------------------------------------------------------------------------------")
+		log.Warn("You are connecting to Berylbit mainnet, the world-class blockchain for")
+		log.Warn("memecoins. Berylbit is one of the last remaining proof-of-work chains in existance.")
+		log.Warn("BerylBit is a rug-resistent blockchain aiming for safety in memecoins")
+		log.Warn("")
+		log.Warn("Join the conversation and help make memecoins a safe and secure space")
+		log.Warn("Link: https://t.me/berylbit")
+		log.Warn("--------------------------------------------------------------------------------")
+		log.Warn("")
+
+		if !ctx.IsSet(NetworkIdFlag.Name) {
+			cfg.NetworkId = 9012
+		}
+		cfg.Genesis = core.DefaultBerylbitGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.BerylbitGenesisHash)
 	case ctx.Bool(GoerliFlag.Name):
 		if !ctx.IsSet(NetworkIdFlag.Name) {
 			cfg.NetworkId = 5
@@ -2154,6 +2184,8 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultSepoliaGenesisBlock()
 	case ctx.Bool(RinkebyFlag.Name):
 		genesis = core.DefaultRinkebyGenesisBlock()
+	case ctx.Bool(BerylbitFlag.Name):
+		genesis = core.DefaultBerylbitGenesisBlock()
 	case ctx.Bool(GoerliFlag.Name):
 		genesis = core.DefaultGoerliGenesisBlock()
 	case ctx.Bool(KilnFlag.Name):

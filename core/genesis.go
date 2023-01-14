@@ -156,6 +156,8 @@ func CommitGenesisState(db ethdb.Database, hash common.Hash) error {
 			genesis = DefaultRopstenGenesisBlock()
 		case params.RinkebyGenesisHash:
 			genesis = DefaultRinkebyGenesisBlock()
+		case params.BerylbitGenesisHash:
+			genesis = DefaultBerylbitGenesisBlock()
 		case params.GoerliGenesisHash:
 			genesis = DefaultGoerliGenesisBlock()
 		case params.SepoliaGenesisHash:
@@ -394,6 +396,8 @@ func (g *Genesis) configOrDefault(ghash common.Hash) *params.ChainConfig {
 		return params.SepoliaChainConfig
 	case ghash == params.RinkebyGenesisHash:
 		return params.RinkebyChainConfig
+	case ghash == params.BerylbitGenesisHash:
+		return params.BerylbitChainConfig
 	case ghash == params.GoerliGenesisHash:
 		return params.GoerliChainConfig
 	case ghash == params.KilnGenesisHash:
@@ -516,6 +520,19 @@ func DefaultRinkebyGenesisBlock() *Genesis {
 		GasLimit:   4700000,
 		Difficulty: big.NewInt(1),
 		Alloc:      decodePrealloc(rinkebyAllocData),
+	}
+}
+
+// DefaultBerylbitGenesisBlock returns the Berylbit network genesis block.
+func DefaultBerylbitGenesisBlock() *Genesis {
+	return &Genesis{
+		Config:     params.BerylbitChainConfig,
+		Nonce:      66,
+		ExtraData:  []byte(""),
+		GasLimit:   0x2fefd8,
+		Difficulty: big.NewInt(0x20000),
+		Timestamp:  0,
+		Alloc:      decodePrealloc(berylbitAllocData),
 	}
 }
 

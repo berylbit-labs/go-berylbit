@@ -281,6 +281,9 @@ func prepare(ctx *cli.Context) {
 	case ctx.IsSet(utils.RinkebyFlag.Name):
 		log.Info("Starting Geth on Rinkeby testnet...")
 
+	case ctx.IsSet(utils.BerylbitFlag.Name):
+		log.Info("Starting Geth on Berylbit mainnet...")
+
 	case ctx.IsSet(utils.GoerliFlag.Name):
 		log.Info("Starting Geth on Görli testnet...")
 
@@ -321,7 +324,7 @@ func prepare(ctx *cli.Context) {
 			!ctx.IsSet(utils.KilnFlag.Name) &&
 			!ctx.IsSet(utils.DeveloperFlag.Name) {
 			// Nope, we're really on mainnet. Bump that cache up!
-			log.Info("Bumping default cache on mainnet", "provided", ctx.Int(utils.CacheFlag.Name), "updated", 4096)
+			log.Info("Bumping default cache on Berylbit Mainnet", "provided", ctx.Int(utils.CacheFlag.Name), "updated", 4096)
 			ctx.Set(utils.CacheFlag.Name, strconv.Itoa(4096))
 		}
 	}

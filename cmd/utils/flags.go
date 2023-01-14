@@ -137,6 +137,11 @@ var (
 		Usage:    "Rinkeby network: pre-configured proof-of-authority test network",
 		Category: flags.EthCategory,
 	}
+	BerylbitFlag = &cli.BoolFlag{
+		Name:     "berylbit",
+		Usage:    "BerylBit network: pre-configured proof-of-work network",
+		Category: flags.EthCategory,
+	}
 	GoerliFlag = &cli.BoolFlag{
 		Name:     "goerli",
 		Usage:    "Görli network: pre-configured proof-of-authority test network",
@@ -990,6 +995,7 @@ var (
 	// NetworkFlags is the flag group of all built-in supported networks.
 	NetworkFlags = append([]cli.Flag{
 		MainnetFlag,
+		BerylbitFlag,
 	}, TestnetFlags...)
 
 	// DatabasePathFlags is the flag group of all database path flags.
@@ -1012,6 +1018,9 @@ func MakeDataDir(ctx *cli.Context) string {
 		}
 		if ctx.Bool(RinkebyFlag.Name) {
 			return filepath.Join(path, "rinkeby")
+		}
+		if ctx.Bool(BerylbitFlag.Name) {
+			return filepath.Join(path, "berylbit")
 		}
 		if ctx.Bool(GoerliFlag.Name) {
 			return filepath.Join(path, "goerli")
@@ -1074,6 +1083,8 @@ func setBootstrapNodes(ctx *cli.Context, cfg *p2p.Config) {
 		urls = params.SepoliaBootnodes
 	case ctx.Bool(RinkebyFlag.Name):
 		urls = params.RinkebyBootnodes
+	case ctx.Bool(BerylbitFlag.Name):
+		urls = params.BerylbitBootnodes
 	case ctx.Bool(GoerliFlag.Name):
 		urls = params.GoerliBootnodes
 	case ctx.Bool(KilnFlag.Name):
@@ -1530,6 +1541,8 @@ func SetDataDir(ctx *cli.Context, cfg *node.Config) {
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "ropsten")
 	case ctx.Bool(RinkebyFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "rinkeby")
+	case ctx.Bool(BerylbitFlag.Name) && cfg.DataDir == node.DefaultDataDir():
+		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "berylbit")
 	case ctx.Bool(GoerliFlag.Name) && cfg.DataDir == node.DefaultDataDir():
 		cfg.DataDir = filepath.Join(node.DefaultDataDir(), "goerli")
 	case ctx.Bool(SepoliaFlag.Name) && cfg.DataDir == node.DefaultDataDir():
@@ -1726,7 +1739,7 @@ func CheckExclusive(ctx *cli.Context, args ...interface{}) {
 // SetEthConfig applies eth-related command line flags to the config.
 func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 	// Avoid conflicting network flags
-	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, GoerliFlag, SepoliaFlag, KilnFlag)
+	CheckExclusive(ctx, MainnetFlag, DeveloperFlag, RopstenFlag, RinkebyFlag, BerylbitFlag, GoerliFlag, SepoliaFlag, KilnFlag)
 	CheckExclusive(ctx, LightServeFlag, SyncModeFlag, "light")
 	CheckExclusive(ctx, DeveloperFlag, ExternalSignerFlag) // Can't use both ephemeral unlocked and external signer
 	if ctx.String(GCModeFlag.Name) == "archive" && ctx.Uint64(TxLookupLimitFlag.Name) != 0 {
@@ -1879,6 +1892,24 @@ func SetEthConfig(ctx *cli.Context, stack *node.Node, cfg *ethconfig.Config) {
 		}
 		cfg.Genesis = core.DefaultSepoliaGenesisBlock()
 		SetDNSDiscoveryDefaults(cfg, params.SepoliaGenesisHash)
+	case ctx.Bool(BerylbitFlag.Name):
+		log.Info("")
+		log.Info("--------------------------------------------------------------------------------")
+		log.Info("You are connecting to BerylBit mainnet, the world-class blockchain for")
+		log.Info("meme coin and one of the last remaining proof-of-work in existance.")
+		log.Info("BerylBit is a rug-resistent block chain aiming to keep you safe while trading")
+		log.Info("memecoins.")
+		log.Info("")
+		log.Info("Join the conversation and help make memecoins a safe and secure space for everyone")
+		log.Info("Link: https://t.me/berylbit")
+		log.Info("--------------------------------------------------------------------------------")
+		log.Info("")
+
+		if !ctx.IsSet(NetworkIdFlag.Name) {
+			cfg.NetworkId = 9012
+		}
+		cfg.Genesis = core.DefaultBerylbitGenesisBlock()
+		SetDNSDiscoveryDefaults(cfg, params.BerylbitGenesisHash)
 	case ctx.Bool(RinkebyFlag.Name):
 		log.Warn("")
 		log.Warn("--------------------------------------------------------------------------------")
@@ -2154,6 +2185,8 @@ func MakeGenesis(ctx *cli.Context) *core.Genesis {
 		genesis = core.DefaultSepoliaGenesisBlock()
 	case ctx.Bool(RinkebyFlag.Name):
 		genesis = core.DefaultRinkebyGenesisBlock()
+	case ctx.Bool(BerylbitFlag.Name):
+		genesis = core.DefaultBerylbitGenesisBlock()
 	case ctx.Bool(GoerliFlag.Name):
 		genesis = core.DefaultGoerliGenesisBlock()
 	case ctx.Bool(KilnFlag.Name):

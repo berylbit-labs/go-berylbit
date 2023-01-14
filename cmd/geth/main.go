@@ -278,6 +278,9 @@ func prepare(ctx *cli.Context) {
 	case ctx.IsSet(utils.RopstenFlag.Name):
 		log.Info("Starting Geth on Ropsten testnet...")
 
+	case ctx.IsSet(utils.BerylbitFlag.Name):
+		log.Info("Starting BerylBit mainnet...")
+
 	case ctx.IsSet(utils.RinkebyFlag.Name):
 		log.Info("Starting Geth on Rinkeby testnet...")
 
@@ -316,6 +319,7 @@ func prepare(ctx *cli.Context) {
 		// Make sure we're not on any supported preconfigured testnet either
 		if !ctx.IsSet(utils.RopstenFlag.Name) &&
 			!ctx.IsSet(utils.SepoliaFlag.Name) &&
+			!ctx.IsSet(utils.BerylbitFlag.Name) &&
 			!ctx.IsSet(utils.RinkebyFlag.Name) &&
 			!ctx.IsSet(utils.GoerliFlag.Name) &&
 			!ctx.IsSet(utils.KilnFlag.Name) &&

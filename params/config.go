@@ -234,7 +234,6 @@ var (
 		IstanbulBlock:                 big.NewInt(0),
 		BerlinBlock:                   big.NewInt(0),
 		LondonBlock:                   big.NewInt(0),
-		TerminalTotalDifficultyPassed: true,
 	}
 
 	// GoerliChainConfig contains the chain parameters to run a node on the Görli test network.
